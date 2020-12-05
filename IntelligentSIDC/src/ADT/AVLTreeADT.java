@@ -27,17 +27,41 @@ public class AVLTreeADT implements iADTInterface {
 
 	@Override
 	public void add(long key, long value) {
-		int hash = (int) (key % SIZE);
-		if (table[hash] == null)
-			table[hash] = new TreeNode(key);
-		else {
-			TreeNode entry = table[hash];
-			insert(entry, key);
+		if (getValues(key) == -1) {
+			int hash = (int) (key % SIZE);
+			if (table[hash] == null)
+				table[hash] = new TreeNode(key);
+			else {
+				TreeNode entry = table[hash];
+				insertNodeAVL(entry, key);
+			}
+			entrySize++;
+		} else {
+			System.out.println("THIS KEY = " + key + " ALREADY EXISTS");
 		}
-		entrySize++;
+
 	}
 
-	private TreeNode insert(TreeNode node, long value) {
+	private TreeNode insertNodeAVL(TreeNode root, long key) {
+		/*
+		 * If the tree is empty, return a new node
+		 */
+		if (root == null) {
+			root = new TreeNode(key);
+			return root;
+		}
+
+		/* Otherwise, recur down the tree */
+		if (key < root.value)
+			root.left = insertNodeAVL(root.left, key);
+		else if (key > root.value)
+			root.right = insertNodeAVL(root.right, key);
+
+		/* return the (unchanged) node pointer */
+		return root;
+	}
+
+	public TreeNode insert(TreeNode node, long value) {
 		/* 1. Perform the normal BST rotation */
 		if (node == null) {
 			return (new TreeNode(value));
@@ -148,7 +172,7 @@ public class AVLTreeADT implements iADTInterface {
 		else if (root.value == key) {
 			return key;
 		} else {
-			if (findNode(root, key, -1) != -1)
+			if (findNodeAVL(root, key))
 				return key;
 			else
 				return -1;
@@ -156,28 +180,98 @@ public class AVLTreeADT implements iADTInterface {
 
 	}
 
-	private long findNode(TreeNode root, long key, long value) {
-		if (root == null)
-			return -1;
-		findNode(root.left, key, value);
-		if (root != null && root.value == key)
-			return value = root.value;
-		findNode(root.right, key, value);
+	// Function to traverse the tree in preorder
+	// and check if the given node exists in it
+	static boolean findNodeAVL(TreeNode node, long key) {
+		if (node == null)
+			return false;
 
-		return value;
+		if (node.value == key)
+			return true;
+
+		// then recur on left sutree /
+		boolean res1 = findNodeAVL(node.left, key);
+
+		// node found, no need to look further
+		if (res1)
+			return true;
+
+		// node is not found in left,
+		// so recur on right subtree /
+		boolean res2 = findNodeAVL(node.right, key);
+
+		return res2;
 	}
+
+//	private long findNode(TreeNode root, long key, long value, long getvalue) {
+//		if (root == null)
+//			return -1;
+//		findNode(root.left, key, value, getvalue);
+//		if (root != null && root.value == key) {
+//			getvalue = root.value;
+//			return value = root.value;
+//		}
+//		findNode(root.right, key, value, getvalue);
+//
+//		return getvalue;
+//	}
 
 	@Override
 	public boolean remove(long key) {
 		int hash = (int) (key % SIZE);
 		if (table[hash] != null) {
-			table[hash] = deleteNode(table[hash], key);
+			table[hash] = deleteNodeAVL(table[hash], key);
 			entrySize--;
 			return true;
 		} else
 			return false;
 	}
 
+	/*
+	 * A recursive function to delete an existing key in BST
+	 */
+	private TreeNode deleteNodeAVL(TreeNode root, long key) {
+		/* Base Case: If the tree is empty */
+		if (root == null)
+			return root;
+
+		/* Otherwise, recur down the tree */
+		if (key < root.value)
+			root.left = deleteNodeAVL(root.left, key);
+		else if (key > root.value)
+			root.right = deleteNodeAVL(root.right, key);
+
+		// if key is same as root's
+		// key, then This is the
+		// node to be deleted
+		else {
+			// node with only one child or no child
+			if (root.left == null)
+				return root.right;
+			else if (root.right == null)
+				return root.left;
+
+			// node with two children: Get the inorder
+			// successor (smallest in the right subtree)
+			root.value = minValue(root.right);
+
+			// Delete the inorder successor
+			root.right = deleteNodeAVL(root.right, root.value);
+		}
+
+		return root;
+	}
+
+	private static long minValue(TreeNode root) {
+		long minv = root.value;
+		while (root.left != null) {
+			minv = root.left.value;
+			root = root.left;
+		}
+		return minv;
+	}
+
+	// need to be delete
 	public TreeNode deleteNode(TreeNode root, long value) {
 
 		if (root == null)
@@ -251,7 +345,7 @@ public class AVLTreeADT implements iADTInterface {
 
 	@Override
 	public void allKeys() {
-		allKeys = new long[SIZE];
+		allKeys = new long[entrySize];
 		counter = 0;
 		for (int i = 0; i < SIZE; i++) {
 			TreeNode entry = table[i];
@@ -277,7 +371,9 @@ public class AVLTreeADT implements iADTInterface {
 			return;
 
 		avlTreeTraversal(root.left);
-		allKeys[counter++] = root.value;
+		if (root != null && root.value > 0)
+			allKeys[counter++] = root.value;
+		// allKeys[counter++] = root.value;
 		avlTreeTraversal(root.right);
 
 	}
@@ -290,14 +386,14 @@ public class AVLTreeADT implements iADTInterface {
 		else
 			return -1;
 	}
-	
+
 	static long findNextParent(TreeNode node, long val, long parent) {
 		if (node == null)
 			return -1;
 
 		// If current node is the required node
 		if (node.value == val) {
-			if(node.right != null)
+			if (node.right != null)
 				nextKey = node.right.value;
 		} else {
 			findNextParent(node.left, val, node.value);
@@ -308,19 +404,22 @@ public class AVLTreeADT implements iADTInterface {
 
 	@Override
 	public long prevKey(long key) {
+		prevKey = -1;
 		int hash = (int) (key % SIZE);
-		if (table[hash] != null)
-			return findParent(table[hash], key, -1);
-		else
+		if (table[hash] != null) {
+			findParent(table[hash], key, -1);
+			return prevKey;
+		} else
 			return -1;
 	}
 
 	static long findParent(TreeNode node, long val, long parent) {
 		if (node == null)
 			return -1;
-		
+
 		if (node.value == val) {
-			prevKey = parent;
+			if (parent > 0)
+				prevKey = parent;
 		} else {
 			findParent(node.left, val, node.value);
 			findParent(node.right, val, node.value);
@@ -331,6 +430,8 @@ public class AVLTreeADT implements iADTInterface {
 	@Override
 	public void rangeKeys(long key1, long key2) {
 		System.out.println();
+		rangedCounter = 0;
+		// allKeys = new long[entrySize];
 		for (int j = 0; j < SIZE; j++) {
 			if (table[j] != null) {
 				countKeyInRange(table[j], key1, key2);
@@ -345,13 +446,13 @@ public class AVLTreeADT implements iADTInterface {
 		if (root == null)
 			return;
 
-		avlTreeTraversal(root.left);
+		countKeyInRange(root.left, k1, k2);
 		if (k1 <= root.value && root.value <= k2) {
-			allKeys[counter++] = root.value;
-			System.out.println(root.value + " ");
+			// allKeys[counter++] = root.value;
+			// System.out.println(root.value + " ");
 			rangedCounter++;
 		}
-		avlTreeTraversal(root.right);
+		countKeyInRange(root.right, k1, k2);
 
 	}
 
@@ -373,6 +474,11 @@ public class AVLTreeADT implements iADTInterface {
 	}
 
 	@Override
+	public void setSize(int size) {
+		entrySize = size;
+	}
+
+	@Override
 	public Node getSortedHead() {
 		// TODO Auto-generated method stub
 		return null;
@@ -386,7 +492,7 @@ public class AVLTreeADT implements iADTInterface {
 
 	@Override
 	public TreeNode[] copyAVLTreeToHashMap() {
-		
+
 		return table;
 	}
 

@@ -6,25 +6,33 @@ import java.util.List;
 import ADT.LinkListADT.Node;
 import SortingAlgo.RadixSort;
 
-public class ArrayADT implements iADTInterface{
-	
+public class ArrayADT implements iADTInterface {
+
 	private static int size = 0;
 	private static LinkedHashEntry[] IntelligentArr = null;
 	private static LinkedHashEntry[] copyIntelligentArr = null;
 	private static List<LinkedHashEntry> rangedIntelligentArr = null;
-	
 
 	public ArrayADT(int arrSize) {
 		IntelligentArr = new LinkedHashEntry[arrSize];
 		size = 0;
 	}
-	
+
 	@Override
 	public void add(long key, long value) {
-		IntelligentArr[size] = new LinkedHashEntry(key, value);
-		size++;
+		if (getValues(key) == -1) {
+			if (size >= 0)
+				try {
+					IntelligentArr[size++] = new LinkedHashEntry(key, value);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
+		} else {
+			System.out.println("THIS KEY = " + key + " ALREADY EXISTS");
+		}
 	}
-	
+
 	@Override
 	public boolean remove(long key) {
 		int index = 0;
@@ -33,10 +41,13 @@ public class ArrayADT implements iADTInterface{
 				index = i;
 			}
 		}
-		IntelligentArr[index] = IntelligentArr[size - 1];
-		IntelligentArr[size - 1] = null;
-		size--;
-		return true;
+		if (size >= 1) {
+			IntelligentArr[index] = IntelligentArr[size - 1];
+			IntelligentArr[size - 1] = null;
+			size--;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -48,20 +59,24 @@ public class ArrayADT implements iADTInterface{
 		}
 		return -1;
 	}
-	
+
 	@Override
 	public void allKeys() {
-		long[] allKeys = new long[size];
-		
-		for (int i = 0; i < size; i++) {
-			allKeys[i] = IntelligentArr[i].getKey();
+		try {
+			long[] allKeys = new long[size];
+
+			for (int i = 0; i < size; i++) {
+				allKeys[i] = IntelligentArr[i].getKey();
+			}
+
+			allKeys = RadixSort.radixsort(allKeys, allKeys.length);
+			for (int i = 0; i < allKeys.length; i++) {
+				System.out.print(allKeys[i] + " ");
+			}
+			System.out.println();
+		} catch (Exception e) {
+			System.out.println("Data not available for sorting.....");
 		}
-		
-		allKeys = RadixSort.radixsort(allKeys, allKeys.length);
-		for (int i = 0; i < allKeys.length; i++) {
-			System.out.print(allKeys[i] +" "); 
-		}
-		System.out.println(); 
 	}
 
 	@Override
@@ -86,16 +101,17 @@ public class ArrayADT implements iADTInterface{
 
 	@Override
 	public void rangeKeys(long key1, long key2) {
-			rangedIntelligentArr = new ArrayList<LinkedHashEntry>();
-		
-			System.out.println();
+		rangedIntelligentArr = new ArrayList<LinkedHashEntry>();
+
+		System.out.println();
 		for (int i = 0; i < size; i++) {
 			if ((key1 <= IntelligentArr[i].getKey()) && (IntelligentArr[i].getKey() <= key2)) {
 				rangedIntelligentArr.add(IntelligentArr[i]);
-				System.out.print(IntelligentArr[i].getKey() +" "); 
-				}
+				// System.out.print(IntelligentArr[i].getKey() + " ");
+			}
 		}
-		
+		System.out.println(rangedIntelligentArr.size() + " student found in this range (" + key1 + " - " + key2 + ")");
+
 	}
 
 	@Override
@@ -107,12 +123,11 @@ public class ArrayADT implements iADTInterface{
 	public LinkedHashEntry[] copyArrayADT() {
 		return IntelligentArr;
 	}
-	
+
 	public static LinkedHashEntry[] getIntelligentArr() {
 		return IntelligentArr;
 	}
 
-	
 	public static LinkedHashEntry[] getCompyIntelligentArr() {
 		return copyIntelligentArr;
 	}
@@ -145,7 +160,10 @@ public class ArrayADT implements iADTInterface{
 		return null;
 	}
 
-	
-	
+	@Override
+	public void setSize(int entry) {
+		size = entry;
+
+	}
 
 }

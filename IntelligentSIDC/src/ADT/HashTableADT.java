@@ -9,11 +9,13 @@ public class HashTableADT implements iADTInterface {
 	private static int entrySize = 0;
 	LinkedHashEntry[] table;
 	private static long[] allKeys;
+	private static int rangedCounter = 0;
 
 	public HashTableADT(int size) {
 		SIZE = size;
 		table = new LinkedHashEntry[SIZE];
 		entrySize = 0;
+		rangedCounter = 0;
 	}
 
 	public HashTableADT allkeys() {
@@ -37,18 +39,23 @@ public class HashTableADT implements iADTInterface {
 
 	public void add(long key, long value) {
 		int hash = (int) (key % SIZE);
-		if (table[hash] == null)
+		if (table[hash] == null) {
 			table[hash] = new LinkedHashEntry(key, value);
-		else {
+			entrySize++;
+		} else {
 			LinkedHashEntry entry = table[hash];
 			while (entry.getNext() != null && entry.getKey() != key)
 				entry = entry.getNext();
-			if (entry.getKey() == key)
-				entry.setValue(value);
-			else
+			if (entry.getKey() == key) {
+				// entry.setValue(value);
+				System.out.println("THIS KEY = " + key + " ALREADY EXISTS");
+
+			} else {
 				entry.setNext(new LinkedHashEntry(key, value));
+				entrySize++;
+			}
 		}
-		entrySize++;
+
 	}
 
 	public boolean remove(long key) {
@@ -66,9 +73,10 @@ public class HashTableADT implements iADTInterface {
 				else
 					prevEntry.setNext(entry.getNext());
 				entrySize--;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public long nextKey(long key) {
@@ -114,7 +122,7 @@ public class HashTableADT implements iADTInterface {
 
 	@Override
 	public void allKeys() {
-		allKeys = new long[SIZE*20];
+		allKeys = new long[SIZE * 20];
 		System.out.println();
 		int counter = 0;
 		for (int i = 0; i < SIZE; i++) {
@@ -141,8 +149,19 @@ public class HashTableADT implements iADTInterface {
 	}
 
 	@Override
-	public void rangeKeys(long key1, long key2) {
-		// TODO Auto-generated method stub
+	public void rangeKeys(long k1, long k2) {
+		rangedCounter = 0;
+		for (int i = 0; i < SIZE; i++) {
+			LinkedHashEntry entry = table[i];
+			while (entry != null) {
+				if (k1 <= entry.getValue() && entry.getValue() <= k2) {
+					entry = entry.getNext();
+					//System.out.println(entry.getValue() + " ");
+					rangedCounter++;
+				}
+			}
+		}
+		System.out.println(rangedCounter + " student found in this range (" + k1 + " - " + k2 + ")");
 
 	}
 
@@ -178,6 +197,12 @@ public class HashTableADT implements iADTInterface {
 	public TreeNode[] copyAVLTreeToHashMap() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setSize(int size) {
+		entrySize = size;
+
 	}
 
 }

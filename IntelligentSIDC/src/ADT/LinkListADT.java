@@ -36,10 +36,12 @@ public class LinkListADT implements iADTInterface {
 	private static Node sortedHead;
 	private static Node rangeHead;
 	private static int size = 0;
+	private static int rangedCounter = 0;
 
 	public LinkListADT() {
 		head = null;
 		size = 0;
+		rangedCounter = 0;
 	}
 
 	public int getLLSize() {
@@ -48,12 +50,16 @@ public class LinkListADT implements iADTInterface {
 
 	@Override
 	public void add(long key, long value) {
-		LinkedHashEntry val = new LinkedHashEntry(key, value);
-		Node n = new Node(val, head);
-		head = n;
-		n = null;
-		size++;
 
+		if (getValues(key) == -1) {
+			LinkedHashEntry val = new LinkedHashEntry(key, value);
+			Node n = new Node(val, head);
+			head = n;
+			n = null;
+			size++;
+		} else {
+			System.out.println("THIS KEY = " + key + " ALREADY EXISTS");
+		}
 	}
 
 	@Override
@@ -71,17 +77,26 @@ public class LinkListADT implements iADTInterface {
 
 	@Override
 	public boolean remove(long key) {
-		if (head == null)
-			return false;
 
-		Node t = head;
-		if (t != null && t.entry.getKey() == key)
+		Node temp = head, prev = null;
+
+		if (temp != null && temp.entry.getValue() == key) {
+			head = temp.next; // Changed head
+			size--;
 			return true;
-
-		while (t != null && t.next != null && t.next.entry.getKey() != key) {
-			t = t.next;
 		}
-		t.next = t.next.next;
+
+		while (temp != null && temp.entry.getValue() != key) {
+			prev = temp;
+			temp = temp.next;
+		}
+
+		if (temp == null) {
+			// size--;
+			return false;
+		}
+
+		prev.next = temp.next;
 		size--;
 
 		return true;
@@ -106,37 +121,28 @@ public class LinkListADT implements iADTInterface {
 
 	@Override
 	public void allKeys() {
-		//Node temp = head;
-//		sortedHead = null;
-//
-//		if (temp == null)
-//			return;
-//
-//		while (temp != null) {
-//			SortAllKeys(new Node(temp.entry, sortedHead));
-//			temp = temp.next;
-//		}
-		
 		sortedLinkedList(head);
 	}
-	
+
 	private static void sortedLinkedList(Node head) {
-		
+
 		long[] allKeys = new long[size];
 		Node sort = head;
 		int i = 0;
 		while (sort != null) {
-			allKeys[i] = sort.getEntry().getKey();
-			sort = sort.getNext();
-			i++;
+			if (sort.getEntry().getKey() > 0) {
+				allKeys[i] = sort.getEntry().getKey();
+				sort = sort.getNext();
+				i++;
+			}
 		}
-		
+
 		allKeys = RadixSort.radixsort(allKeys, allKeys.length);
 		for (int j = 0; j < allKeys.length; j++) {
-			System.out.print(allKeys[j] +" "); 
+			System.out.print(allKeys[j] + " ");
 		}
-		System.out.println(); 
-		
+		System.out.println();
+
 	}
 
 	@Override
@@ -150,10 +156,12 @@ public class LinkListADT implements iADTInterface {
 		while (temp != null) {
 			if (key1 <= temp.entry.getKey() && temp.entry.getKey() <= key2) {
 				addToRange(temp.entry.getKey(), temp.entry.getValue(), rangeHead);
-				System.out.print(temp.entry.getKey() +" "); 
+				//System.out.print(temp.entry.getKey() + " ");
+				rangedCounter++;
 			}
 			temp = temp.next;
 		}
+		System.out.println(rangedCounter + " student found in this range (" + key1 + " - " + key2 + ")");
 
 	}
 
@@ -232,6 +240,11 @@ public class LinkListADT implements iADTInterface {
 	public TreeNode[] copyAVLTreeToHashMap() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setSize(int entry) {
+		size = entry;
 	}
 
 }

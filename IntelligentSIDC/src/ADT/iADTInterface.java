@@ -15,5 +15,6 @@ public interface iADTInterface {
 	public LinkedHashEntry[] copyHashTable();
 	public TreeNode[] copyAVLTreeToHashMap();
 	public int getSize();
+	public void setSize(int size);
 	public Node getSortedHead();
 }
