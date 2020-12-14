@@ -198,8 +198,10 @@ public class LinkListADT implements iADTInterface {
 		while (t != null && t.next != null && t.next.entry.getKey() != key) {
 			t = t.next;
 		}
-
+		
+		if(t.next != null && t.next.next != null)
 		return t.next.next.entry.getKey();
+		else return -1;
 	}
 
 	public Node getHead() {

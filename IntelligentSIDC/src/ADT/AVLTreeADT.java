@@ -220,9 +220,14 @@ public class AVLTreeADT implements iADTInterface {
 	public boolean remove(long key) {
 		int hash = (int) (key % SIZE);
 		if (table[hash] != null) {
-			table[hash] = deleteNodeAVL(table[hash], key);
-			entrySize--;
-			return true;
+
+			if (findNodeAVL(table[hash], key)) {
+				table[hash] = deleteNodeAVL(table[hash], key);
+				entrySize--;
+				return true;
+			} else
+				return false;
+
 		} else
 			return false;
 	}

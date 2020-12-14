@@ -95,12 +95,12 @@ public class HashTableADT implements iADTInterface {
 
 		if (entry == null)
 			return -1;
-		else {
+		else if (entry.getNext() != null){
 			if (entry.getNext().getNext() != null)
 				return entry.getNext().getNext().getKey();
-		}
+			else return -1;
+		}else return -1;
 
-		return -1;
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class HashTableADT implements iADTInterface {
 
 	@Override
 	public void allKeys() {
-		allKeys = new long[SIZE * 20];
+		allKeys = new long[entrySize];
 		System.out.println();
 		int counter = 0;
 		for (int i = 0; i < SIZE; i++) {
@@ -154,12 +154,13 @@ public class HashTableADT implements iADTInterface {
 		for (int i = 0; i < SIZE; i++) {
 			LinkedHashEntry entry = table[i];
 			while (entry != null) {
-				if (k1 <= entry.getValue() && entry.getValue() <= k2) {
-					entry = entry.getNext();
-					//System.out.println(entry.getValue() + " ");
+				long storedVal = entry.getValue();
+				if (k1 <= storedVal && storedVal <= k2) {
 					rangedCounter++;
 				}
+				entry = entry.getNext();
 			}
+			
 		}
 		System.out.println(rangedCounter + " student found in this range (" + k1 + " - " + k2 + ")");
 

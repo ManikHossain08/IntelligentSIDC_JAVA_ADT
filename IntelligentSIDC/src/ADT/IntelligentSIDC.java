@@ -7,51 +7,69 @@ import ADT.LinkListADT.Node;
 public class IntelligentSIDC {
 
 	public static iADTInterface univeralDBTable = null;
+	public static iADTInterface usedADT = null;
+	public static final int SAMLL= 500; // range: 1 to 500
+	public static final int MEDIUM= 10000; // range: 501 to 10,000
+	public static final int LARGE= 100000; // range: 10,001 to 100,000
+	public static final int EXTRALARGE= 5000000; // range: 100,001 to infinity
 
-	public iADTInterface SetSIDCThreshold(int size, iADTInterface whichADT) {
+	public void SetSIDCThreshold(int thresHold) {
+		if (thresHold <= SAMLL) { // ARRAY ADT
+			univeralDBTable = new ArrayADT(SAMLL+1);
+		}
+		else if (SAMLL < thresHold && thresHold <= MEDIUM) { // LINKED LIST ADT
+			univeralDBTable = new LinkListADT();
+		} else if (MEDIUM < thresHold && thresHold <= LARGE) { // HASH TABLE WITH LINKED LIST ADT
+			univeralDBTable = new HashTableADT(MEDIUM+1);
+		} else { // HASH TABLE WITH AVL TREE ADT
+			univeralDBTable = new AVLTreeADT(LARGE+1);
+		}
+	
+	}
 
-		univeralDBTable = whichADT;
-		if (size <= 500) { // ARRAY
-			if (size == 0 && whichADT.getClass().getName().contentEquals("ADT.ArrayADT")) {
+	public iADTInterface dynamicallyShrinkingADTs(int size) {  
+
+		if (size <= SAMLL) { // ARRAY
+			if (size == 0 && univeralDBTable.getClass().getName().contentEquals("ADT.ArrayADT")) {
 				univeralDBTable = new ArrayADT(501);
 			}
-			if (size == 500 && whichADT.getClass().getName().contentEquals("ADT.LinkListADT")) {
-				univeralDBTable.allKeys();
+			if (size == SAMLL && univeralDBTable.getClass().getName().contentEquals("ADT.LinkListADT")) {
+				//univeralDBTable.allKeys();
 				Node llHead = univeralDBTable.copyLinkedListDT();
 				univeralDBTable = new ArrayADT(501);
 				copyLinkListADTToArrayADT(llHead, size);
 			}
 
-		} else if (500 < size && size <= 10000) { // LINKED LIST
-			if (size == 501 && whichADT.getClass().getName().contentEquals("ADT.ArrayADT")) {
-				univeralDBTable.allKeys();
+		} else if (SAMLL < size && size <= MEDIUM) { // LINKED LIST
+			if (size == SAMLL+1 && univeralDBTable.getClass().getName().contentEquals("ADT.ArrayADT")) {
+				//univeralDBTable.allKeys();
 				LinkedHashEntry[] arrayDB = univeralDBTable.copyArrayADT();
 				univeralDBTable = new LinkListADT();
 				copyArrayADTToLinkedListADT(arrayDB, size);
 			}
-			if (size == 10000 && whichADT.getClass().getName().contentEquals("ADT.HashTableADT")) {
-				univeralDBTable.allKeys();
+			if (size == MEDIUM && univeralDBTable.getClass().getName().contentEquals("ADT.HashTableADT")) {
+				//univeralDBTable.allKeys();
 				LinkedHashEntry[] hashTable = univeralDBTable.copyHashTable();
 				univeralDBTable = new LinkListADT();
 				copyHashADTToLinkedListADT(hashTable, size);
 			}
-		} else if (10000 < size && size <= 20000) { // HASH TABLE
-			if (size == 10001 && whichADT.getClass().getName().contentEquals("ADT.LinkListADT")) {
-				univeralDBTable.allKeys();
+		} else if (MEDIUM < size && size <= LARGE) { // HASH TABLE
+			if (size == MEDIUM+1 && univeralDBTable.getClass().getName().contentEquals("ADT.LinkListADT")) {
+				//univeralDBTable.allKeys();
 				Node llHead = univeralDBTable.copyLinkedListDT();
-				univeralDBTable = new HashTableADT(1001);
+				univeralDBTable = new HashTableADT(MEDIUM+1);
 				copyLinkListADTToHashTableADT(llHead, size);
-			} else if (size == 20000 && whichADT.getClass().getName().contentEquals("ADT.AVLTreeADT")) {
-				univeralDBTable.allKeys();
+			} else if (size == LARGE && univeralDBTable.getClass().getName().contentEquals("ADT.AVLTreeADT")) {
+				//univeralDBTable.allKeys();
 				TreeNode[] avlTree = univeralDBTable.copyAVLTreeToHashMap();
-				univeralDBTable = new HashTableADT(1001);
+				univeralDBTable = new HashTableADT(MEDIUM+1);
 				copyAVLTreeToHashTableADT(avlTree, size);
 			}
-		} else { // AVL TREE
-			if (size == 20001 && whichADT.getClass().getName().contentEquals("ADT.HashTableADT")) {
-				univeralDBTable.allKeys();
+		} else { //EXTRALARGE: AVL TREE
+			if (size == LARGE+1 && univeralDBTable.getClass().getName().contentEquals("ADT.HashTableADT")) {
+				//univeralDBTable.allKeys();
 				LinkedHashEntry[] avlTable = univeralDBTable.copyHashTable();
-				univeralDBTable = new AVLTreeADT(2001);
+				univeralDBTable = new AVLTreeADT(LARGE+1);
 				copyHashTableADTToAvlTreeADT(avlTable, size);
 			}
 		}
@@ -59,14 +77,11 @@ public class IntelligentSIDC {
 		return univeralDBTable;
 	}
 
-	
-
 	public long generate() {
 		Random rnd = new Random();
 		int id = 10000000 + rnd.nextInt(99999999);
 		return id;
 	}
-
 
 	public IntelligentSIDC allkeys() {
 		univeralDBTable.allKeys();
@@ -76,19 +91,19 @@ public class IntelligentSIDC {
 	public void add(long key, long value) {
 		univeralDBTable.add(key, value);
 	}
-	
+
 	public boolean remove(long key) {
 		return univeralDBTable.remove(key);
 	}
-	
+
 	public long getValues(long key) {
 		return univeralDBTable.getValues(key);
 	}
-	
+
 	public long nextKey(long key) {
 		return univeralDBTable.nextKey(key);
 	}
-	
+
 	public long prevKey(long key) {
 		return univeralDBTable.prevKey(key);
 	}
@@ -101,11 +116,10 @@ public class IntelligentSIDC {
 		return univeralDBTable.getSize();
 	}
 
-	
 	public TreeNode[] getFullAVLDB() {
 		return univeralDBTable.copyAVLTreeToHashMap();
 	}
-	
+
 	private void copyLinkListADTToArrayADT(Node llHead, int size) {
 
 		if (llHead == null)
@@ -115,7 +129,7 @@ public class IntelligentSIDC {
 			univeralDBTable.add(t.getEntry().getKey(), t.getEntry().getKey());
 			t = t.getNext();
 		}
-	
+
 	}
 
 	private void copyLinkListADTToHashTableADT(Node llHead, int size) {
@@ -127,7 +141,7 @@ public class IntelligentSIDC {
 			univeralDBTable.add(t.getEntry().getKey(), t.getEntry().getKey());
 			t = t.getNext();
 		}
-	
+
 	}
 
 	private void copyArrayADTToLinkedListADT(LinkedHashEntry[] arrayDB, int size) {
@@ -135,7 +149,7 @@ public class IntelligentSIDC {
 			if (linkedHashEntry != null)
 				univeralDBTable.add(linkedHashEntry.getKey(), linkedHashEntry.getValue());
 		}
-		
+
 	}
 
 	private void copyHashTableADTToAvlTreeADT(LinkedHashEntry[] avlTable, int size) {
@@ -150,7 +164,7 @@ public class IntelligentSIDC {
 				}
 			}
 		}
-		
+
 	}
 
 	private void copyAVLTreeToHashTableADT(TreeNode[] avlTree, int size) {
