@@ -25,38 +25,38 @@ public class CSTA_Client {
 		kb.close();
 
 		
-		// TEST CASE-01
-		for (int i = 0; i < 500; i++) {
-			long key = universalTable.generate();
-			insertValueToSIDC(universalTable, key);
-		}
-//		
+//		// TEST CASE-01
+//		for (int i = 0; i < 500; i++) {
+//			long key = universalTable.generate();
+//			insertValueToSIDC(universalTable, key);
+//		}
+		
 //		
 //		// TEST CASE-02
 //		for (int i = 0; i < 10000; i++) {
 //			long key = universalTable.generate();
 //			insertValueToSIDC(universalTable, key);
 //		}
-//		
+		
 //		// TEST CASE-03
 //		for (int i = 0; i < 100000; i++) {
 //			long key = universalTable.generate();
 //			insertValueToSIDC(universalTable, key);
 //		}
-//		
+		
 //		// TEST CASE-04
-//		for (int i = 0; i < 5000000; i++) {
+//		for (int i = 0; i < 500000; i++) {
 //			long key = universalTable.generate();
 //			insertValueToSIDC(universalTable, key);
 //		}
 //		removeKeysToShrinkDB(universalTable);
-//		
 		
 		
-//		// TEST CASE-05, 06, 07
+		
+		// TEST CASE-05, 06, 07
 //		Scanner sc = null;
 //		try {
-//			String fileName = "CSTA_test_file3.txt"; // studentsId // CSTA_test_file1
+//			String fileName = "CSTA_test_file1.txt"; // studentsId // CSTA_test_file1
 //			readFromExistingFile(sc, universalTable, fileName);
 //			// removeFromExistingFile(sc, universalTable);
 //			//removeKeysToShrinkDB(universalTable);
@@ -64,7 +64,7 @@ public class CSTA_Client {
 //		} catch (FileNotFoundException e) {
 //			System.out.println(e.getMessage());
 //		}
-//		
+	
 		
 		// ---------- CHECK ALL THE METHOD --------------//
 		
@@ -82,11 +82,11 @@ public class CSTA_Client {
 
 		// CHECK GETVALUES
 		System.out.println("\nGetValue: ");
-		long check = 70164722; // 82560366 (1) // 78829726 (2) // 70164722 (3)
+		long check = 82560366; // 82560366 (1) // 78829726 (2) // 70164722 (3)
 		if (universalTable.getValues(check) != -1)
 			System.out.println("The value " + check + " Founded.");
 		else
-			System.out.println("No found, may be deleted");
+			System.out.println(check + ", Not found, may be deleted");
 		System.out.println("\n");
 
 		// CHEECK NEXTKEY AND PREVKEY
@@ -110,7 +110,7 @@ public class CSTA_Client {
 		if (universalTable.getValues(check) != -1)
 			System.out.println("The value " + check + " Founded.");
 		else
-			System.out.println("No found, may be deleted");
+			System.out.println("Not found, may be this key has been deleted");
 		System.out.println("\n");
 
 	}
