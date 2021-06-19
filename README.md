@@ -6,7 +6,9 @@ The Canadian Student Tracking Agency (CSTA) maintains and operates on multiple l
 IntelligentSIDC adapts to their usage and keep the balance between memory and runtime requirements. For instance, if an IntelligentSIDC contains only a small number of entries (e.g., few hundreds), it might use less memory overhead but slower (sorting) algorithms. On the other hand, if the number of contained entries is large (greater than 1000 or even in the range of tens of thousands of elements), it might have a higher memory requirement but faster (sorting) algorithms. IntelligentSIDC might be almost constant in size or might grow and/or shrink dynamically. Ideally, operations applicable to a single IntelligentSIDC entry should be O(1) but never worse than O(n). Operations applicable to a complete IntelligentSIDC should not exceed O(n2).
 
 You have been asked to design and implement the IntelligentSIDC ADT, which automatically adapts to the dynamic content that it operates on. In other words, it accepts the size (total number of students, n, identified by their 8 digits SIDC number as a key) as a parameter and uses an appropriate (set of) data structure(s), or other data types, from the one(s) studied in class in order to perform the operations below efficiently1. You are NOT allowed however to use any of the built-in data types (that is, you must implement whatever you need, for instance, linked lists, expandable arrays, hash tables, etc. yourself).
-The IntelligentSIDC must implement the following methods:
+
+## The IntelligentSIDC must implement the following methods:
+
 • SetSIDCThreshold (Size): where 100 ≤ Size ≤ ~500,000 is an integer number that defines the size of the list. This size is very important as it will determine what data types or data structures will be used (i.e. a Tree, Hash Table, AVL tree, binary tree, sequence, etc.);
 • generate(): randomly generates new non-existing key of 8 digits;
 • allKeys(IntelligentSIDC): return all keys in IntelligentSIDC as a sorted sequence;
